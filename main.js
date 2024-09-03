@@ -2,31 +2,20 @@ let cardElements = document.getElementsByClassName('game-card');
 let cardElementsArray = [...cardElements];
 let imgElements = document.getElementsByClassName('game-card-img');
 let imgElementsArray = [...imgElements];
-let starElements = document.getElementsByClassName('star');
-let starElementsArray = [...starElements];
 let counter = document.getElementById('moveCounter');
-let timer = document.getElementById('timer');
-let modalElement = document.getElementById('gameOverModal');
-let totalGameMovesElement = document.getElementById('totalGameMoves');
-let totalGameTimeElement = document.getElementById('totalGameTime');
-let finalStarRatingElement = document.getElementById('finalStarRating');
-let closeModalIcon = document.getElementById('closeModal');
+let timerElement = document.getElementById('timer');
 let openedCards = [];
-let matchedCards =  [];
-let moves;
-let second = 0,
-    minute = 0,
-    hour = 0,
-    interval,
-    totalGameTime,
-    starRating;
+let matchedCards = [];
+let moves = 0;
+let timeElapsed = 0;
+let timerInterval = null;
 
 function shuffle(array) {
     let currentIndex = array.length,
         temporaryValue,
         randomIndex;
 
-    while (currentIndex !==0) {
+    while (currentIndex !== 0) {
         randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex -= 1;
         temporaryValue = array[currentIndex];
@@ -39,20 +28,39 @@ function shuffle(array) {
 
 function startGame() {
     let shuffledImages = shuffle(imgElementsArray);
-    for(i=0; i<shuffledImages.length; i++) {
+    for (let i = 0; i < shuffledImages.length; i++) {
         cardElements[i].innerHTML = "";
         cardElements[i].appendChild(shuffledImages[i]);
         cardElements[i].type = `${shuffledImages[i].alt}`;
         cardElements[i].classList.remove("show", "open", "match", "disabled");
         cardElements[i].children[0].classList.remove("show-img");
     }
-    for(let i = 0; i < cardElementsArray.length; i++) {
-        cardElementsArray[i].addEventListener("click", displayCard)
-    }
     moves = 0;
-    clearInterval(interval);
+    counter.textContent = moves;
+    stopTimer();  // Reset the timer when the game starts
+    timeElapsed = 0;
+    timerElement.textContent = timeElapsed;
+    for (let i = 0; i < cardElementsArray.length; i++) {
+        cardElementsArray[i].addEventListener("click", displayCard);
+    }
 }
+
+function startTimer() {
+    if (!timerInterval) {
+        timerInterval = setInterval(function () {
+            timeElapsed++;
+            timerElement.textContent = timeElapsed;
+        }, 1000);
+    }
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+}
+
 function displayCard() {
+    startTimer();  // Start the timer when the first card is clicked
     this.children[0].classList.toggle('show-img');
     this.classList.toggle("open");
     this.classList.toggle("show");
@@ -63,9 +71,9 @@ function displayCard() {
 function cardOpen(card) {
     openedCards.push(card);
     let len = openedCards.length;
-    if(len === 2) {
+    if (len === 2) {
         moveCounter();
-        if(openedCards[0].type === openedCards[1].type) {
+        if (openedCards[0].type === openedCards[1].type) {
             matched();
         } else {
             unmatched();
@@ -81,9 +89,9 @@ function matched() {
     matchedCards.push(openedCards[0]);
     matchedCards.push(openedCards[1]);
     openedCards = [];
-    if(matchedCards.length == 16) {
-        alert("Congrats !! you have completed the came")
-        location.reload()
+    if (matchedCards.length == 16) {
+        alert("Congrats !! You have completed the game");
+        location.reload();
     }
 }
 
@@ -91,41 +99,45 @@ function unmatched() {
     openedCards[0].classList.add("unmatched");
     openedCards[1].classList.add("unmatched");
     disable();
-    setTimeout(function() {
+    setTimeout(function () {
         openedCards[0].classList.remove("show", "open", "unmatched");
         openedCards[1].classList.remove("show", "open", "unmatched");
         openedCards[0].children[0].classList.remove('show-img');
         openedCards[1].children[0].classList.remove('show-img');
         enable();
         openedCards = [];
-        
-    }, 1100)
+    }, 1100);
 }
 
 function disable() {
-    cardElementsArray.filter((card, i, cardElementsArray) => {
+    cardElementsArray.filter((card) => {
         card.classList.add('disabled');
-    })
+    });
 }
 
 function enable() {
-    cardElementsArray.filter((card, i, cardElementsArray) => {
+    cardElementsArray.filter((card) => {
         card.classList.remove('disabled');
-        for(let i=0; i<matchedCards.length; i++) {
+        for (let i = 0; i < matchedCards.length; i++) {
             matchedCards[i].classList.add('disabled');
         }
-    })
+    });
 }
 
 function moveCounter() {
     moves++;
-    if(moves>10){
-        alert("Game over Try Again");
-        location.reload();
+    counter.textContent = moves;
+    if (moves >= 10) {
+        setTimeout(() => {
+            alert("Game over! Try Again.");
+            stopTimer();
+            location.reload();
+        }, 200);
     }
 }
+
 window.onload = function () {
-    setTimeout(function() {
-        startGame()
+    setTimeout(function () {
+        startGame();
     }, 1200);
-}
+};

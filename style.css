@@ -1,6 +1,6 @@
 body {
     font-family: monospace, Arial, Helvetica, sans-serif;
-    background-color: #f5a700;
+    background-color: cadetblue;
 }
 
 ol, ul {
@@ -21,7 +21,7 @@ h1 {
     max-width: 50%;
     margin-left: auto;
     margin-right: auto;
-    background-color: #f5a700;
+    background-color: pink;
     border-radius: 0.3em;
 }
 
@@ -207,4 +207,38 @@ h1 {
         width: 6em;
         height: 6em;
     }
+}
+
+
+
+#timer {
+    display: inline-block;
+    margin: 20px auto 0;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: rgb(183, 108, 121);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+
+header {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#timer {
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+}
+
+#moveCounter{
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
 }
